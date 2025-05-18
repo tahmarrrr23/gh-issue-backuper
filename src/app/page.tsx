@@ -21,7 +21,8 @@ import { fetchProjectV2All } from "@/lib/githubApi";
 
 export default function Home() {
   const [token, setToken] = useState("");
-  const [repo, setRepo] = useState("");
+  const [org, setOrg] = useState("");
+  const [projectNumber, setProjectNumber] = useState("");
   const [status, setStatus] = useState("");
   const [showToken, setShowToken] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -35,13 +36,13 @@ export default function Home() {
   const handleBackup = useCallback(async () => {
     setStatus("Backing up...");
     try {
-      const projects = await fetchProjectV2All(token, repo);
-      downloadJson(projects, `${repo.replace("/", "-")}-projects-backup.json`);
+      const result = await fetchProjectV2All(token, org, Number(projectNumber));
+      downloadJson(result, `${org}-project${projectNumber}-backup.json`);
       setStatus("Backup complete (Downloaded)");
     } catch (e) {
       setStatus("Error: " + (e instanceof Error ? e.message : ""));
     }
-  }, [token, repo]);
+  }, [token, org, projectNumber]);
 
   return (
     <Box
@@ -64,11 +65,11 @@ export default function Home() {
           <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
             <GitHubIcon sx={{ fontSize: 40, color: "#24292f", mr: 1 }} />
             <Typography variant="h4" component="h1" fontWeight={700}>
-              GitHub Issue/Project Backup
+              GitHub ProjectV2 Backup
             </Typography>
           </Box>
           <Typography variant="subtitle1" color="text.secondary" mb={3}>
-            Easily backup your GitHub Issues and Projects with one click!
+            Org名とProject番号を指定してGitHub ProjectV2をバックアップ！
           </Typography>
           <Box
             component="form"
@@ -135,10 +136,19 @@ export default function Home() {
               </Typography>
             </Box>
             <TextField
-              label="Repository (owner/repo)"
+              label="Organization Name"
               type="text"
-              value={repo}
-              onChange={(e) => setRepo(e.target.value)}
+              value={org}
+              onChange={(e) => setOrg(e.target.value)}
+              fullWidth
+              variant="outlined"
+              sx={{ background: "#f8fafc", borderRadius: 2 }}
+            />
+            <TextField
+              label="Project Number"
+              type="number"
+              value={projectNumber}
+              onChange={(e) => setProjectNumber(e.target.value)}
               fullWidth
               variant="outlined"
               sx={{ background: "#f8fafc", borderRadius: 2 }}
@@ -146,7 +156,7 @@ export default function Home() {
             <Button
               variant="contained"
               onClick={handleBackup}
-              disabled={!token || !repo}
+              disabled={!token || !org || !projectNumber}
               sx={{
                 py: 1.5,
                 fontWeight: 700,

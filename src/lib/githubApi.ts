@@ -1,84 +1,102 @@
 import { graphql } from "@octokit/graphql";
 
-const GQL_PROJECTS_QUERY = `
-  query($owner: String!, $repo: String!) {
-    repository(owner: $owner, name: $repo) {
-      projectsV2(first: 10) {
-        nodes {
-          id
-          title
-          number
-          fields(first: 50) {
-            nodes {
-              ... on ProjectV2Field {
+// プロジェクトV2の全データを取得する関数
+export async function fetchProjectV2All(
+  token: string,
+  org: string,
+  projectNumber: number
+) {
+  if (!org || !projectNumber)
+    throw new Error("Org名とProject番号を入力してください");
+
+  // プロジェクトIDの取得は不要、直接orgとprojectNumberでクエリ
+  const query = `
+    query($org: String!, $number: Int!) {
+      organization(login: $org) {
+        projectV2(number: $number) {
+          ... on ProjectV2 {
+            id
+            title
+            url
+            creator { login }
+            createdAt
+            updatedAt
+            items(first: 100) {
+              nodes {
                 id
-                name
-                dataType
-              }
-              ... on ProjectV2IterationField {
-                id
-                name
-                configuration {
-                  iterations { id title }
+                content {
+                  ... on Issue {
+                    id
+                    number
+                    title
+                    url
+                    state
+                    createdAt
+                    updatedAt
+                    author { login }
+                    assignees(first: 5) { nodes { login } }
+                    labels(first: 10) { nodes { name color } }
+                    body
+                    comments(first: 30) {
+                      nodes {
+                        id
+                        author { login }
+                        body
+                        createdAt
+                      }
+                    }
+                  }
+                  ... on PullRequest {
+                    id
+                    number
+                    title
+                    url
+                    state
+                    createdAt
+                    updatedAt
+                    author { login }
+                    assignees(first: 5) { nodes { login } }
+                    labels(first: 10) { nodes { name color } }
+                    body
+                    comments(first: 30) {
+                      nodes {
+                        id
+                        author { login }
+                        body
+                        createdAt
+                      }
+                    }
+                  }
                 }
-              }
-              ... on ProjectV2SingleSelectField {
-                id
-                name
-                options { id name color }
+                fieldValues(first: 20) {
+                  nodes {
+                    ... on ProjectV2ItemFieldTextValue {
+                      text
+                      field { ... on ProjectV2FieldCommon { name } }
+                    }
+                    ... on ProjectV2ItemFieldDateValue {
+                      date
+                      field { ... on ProjectV2FieldCommon { name } }
+                    }
+                    ... on ProjectV2ItemFieldSingleSelectValue {
+                      name
+                      field { ... on ProjectV2FieldCommon { name } }
+                    }
+                    ... on ProjectV2ItemFieldNumberValue {
+                      number
+                      field { ... on ProjectV2FieldCommon { name } }
+                    }
+                  }
+                }
               }
             }
-          }
-          items(first: 100) {
-            nodes {
-              id
-              content {
-                ... on Issue {
-                  id number title body state url createdAt updatedAt closedAt
-                  author { login }
-                  assignees(first: 10) { nodes { login } }
-                  labels(first: 20) { nodes { name } }
-                  milestone { title }
-                  comments { totalCount }
-                  reactions { totalCount }
-                }
-                ... on PullRequest {
-                  id number title body state url createdAt updatedAt closedAt
-                  author { login }
-                }
-              }
-              fieldValues(first: 20) {
-                nodes {
-                  __typename
-                  ... on ProjectV2ItemFieldSingleSelectValue {
-                    field { ... on ProjectV2Field { id name } }
-                    name
-                    optionId
-                  }
-                  ... on ProjectV2ItemFieldTextValue {
-                    field { ... on ProjectV2Field { id name } }
-                    text
-                  }
-                  ... on ProjectV2ItemFieldNumberValue {
-                    field { ...on ProjectV2Field { id name } }
-                    number
-                  }
-                  ... on ProjectV2ItemFieldDateValue {
-                    field { ...on ProjectV2Field { id name } }
-                    date
-                  }
-                  ... on ProjectV2ItemFieldIterationValue {
-                    field { ...on ProjectV2Field { id name } }
-                    iterationId
-                  }
-                  ... on ProjectV2ItemFieldRepositoryValue {
-                    field { ...on ProjectV2Field { id name } }
-                    repository { id name }
-                  }
-                  ... on ProjectV2ItemFieldUserValue {
-                    field { ...on ProjectV2Field { id name } }
-                    users(first: 10) { nodes { id login } }
-                  }
+            fields(first: 20) {
+              nodes {
+                ... on ProjectV2FieldCommon { id name }
+                ... on ProjectV2SingleSelectField {
+                  id
+                  name
+                  options { id name color }
                 }
               }
             }
@@ -86,38 +104,12 @@ const GQL_PROJECTS_QUERY = `
         }
       }
     }
-  }
-`;
+  `;
 
-export async function fetchProjectV2All(token: string, repo: string) {
-  const [owner, name] = repo.split("/");
-  const result = await graphql(GQL_PROJECTS_QUERY, {
-    owner,
-    repo: name,
-    headers: {
-      authorization: `token ${token}`,
-    },
+  const result = await graphql(query, {
+    org,
+    number: projectNumber,
+    headers: { authorization: `token ${token}` },
   });
-  if (
-    result &&
-    typeof result === "object" &&
-    result !== null &&
-    "repository" in result &&
-    typeof result.repository === "object" &&
-    result.repository !== null &&
-    "projectsV2" in (result.repository as Record<string, unknown>) &&
-    (
-      (result.repository as Record<string, unknown>).projectsV2 as Record<
-        string,
-        unknown
-      >
-    ).nodes
-  ) {
-    return (
-      (result.repository as Record<string, unknown>).projectsV2 as {
-        nodes: unknown[];
-      }
-    ).nodes;
-  }
-  throw new Error("Unexpected GraphQL response structure");
+  return result;
 }
