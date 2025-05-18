@@ -16,7 +16,8 @@
     "@octokit/graphql": "^8.2.2",
     "next": "15.3.2",
     "react": "^19",
-    "react-dom": "^19"
+    "react-dom": "^19",
+    "react-markdown": "^10.1.0"
   },
   "devDependencies": {
     "@tsconfig/next": "^2.0.3",
