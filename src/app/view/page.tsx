@@ -1,135 +1,61 @@
 "use client";
 
-import { Box, Paper, Typography } from "@mui/material";
-import Button from "@mui/material/Button";
-import React, { useState } from "react";
+import { Link } from "@mui/material";
+import { useEffect, useState } from "react";
 
 import { IssueFilterBar } from "@/components/IssueFilterBar";
 import { IssueList } from "@/components/IssueList";
 
-type Comment = {
-  id: string;
-  author: { login: string };
-  body: string;
-  createdAt: string;
-};
-
-interface ProjectField {
-  name: string;
-  value?: string;
-}
-
-interface Issue {
-  id: string;
-  number: number;
-  title: string;
-  url: string;
-  state: string;
-  createdAt: string;
-  updatedAt: string;
-  author: { login: string };
-  assignees: { nodes: { login: string }[] };
-  labels: { nodes: { name: string }[] };
-  body: string;
-  comments: { nodes: Comment[] };
-  projectFields?: ProjectField[];
-}
-
-async function getIssues(): Promise<Issue[]> {
-  const res = await fetch("/sample.json");
-  const data = await res.json();
-  return data.organization.projectV2.items.nodes.map(
-    (item: { content: Issue; fieldValues?: { nodes?: unknown[] } }) => {
-      const content = item.content;
-      // Projectのフィールド情報を抽出
-      const projectFields: ProjectField[] = (item.fieldValues?.nodes || [])
-        .filter(
-          (
-            f
-          ): f is { field?: { name?: string }; text?: string; name?: string } =>
-            !!f && typeof f === "object" && ("text" in f || "name" in f)
-        )
-        .map((f) => ({
-          name: f.field?.name || f.name || "",
-          value:
-            typeof f.text === "string"
-              ? f.text
-              : typeof f.name === "string"
-                ? f.name
-                : "",
-        }));
-      return { ...content, projectFields };
-    }
-  );
-}
+import { getIssues, Issue } from "../../lib/issueLoader";
 
 export default function ViewPage() {
-  const [issues, setIssues] = React.useState<Issue[]>([]);
+  const [issues, setIssues] = useState<Issue[]>([]);
   const [openIdx, setOpenIdx] = useState<number | null>(null);
   const [filter, setFilter] = useState<"ALL" | "OPEN" | "CLOSED">("ALL");
-  const filteredIssues = issues.filter((issue) => {
-    if (filter !== "ALL") {
-      if (filter === "OPEN" && issue.state !== "OPEN") return false;
-      if (filter === "CLOSED" && issue.state === "OPEN") return false;
-    }
-    return true;
-  });
-  const openCount = issues.filter((issue) => issue.state === "OPEN").length;
-  const closedCount = issues.filter((issue) => issue.state !== "OPEN").length;
-
-  React.useEffect(() => {
-    getIssues().then((issues) => {
-      setIssues(issues);
-    });
+  useEffect(() => {
+    getIssues().then(setIssues);
   }, []);
-
+  const filtered = issues.filter(
+    (i) =>
+      filter === "ALL" ||
+      (filter === "OPEN" ? i.state === "OPEN" : i.state !== "OPEN")
+  );
+  const open = issues.filter((i) => i.state === "OPEN").length;
+  const closed = issues.length - open;
   return (
     <>
-      <Paper elevation={0} sx={{ bgcolor: "transparent", mb: 4 }}>
-        <Typography
-          variant="h3"
-          fontWeight={900}
-          mb={1}
-          color="#90caf9"
-          letterSpacing={1.5}
-          sx={{ textAlign: "center", textShadow: "0 2px 16px #0a1929" }}
-        >
-          <span style={{ verticalAlign: "middle" }}>GitHub Issues Viewer</span>
-        </Typography>
-      </Paper>
+      <h1 style={{ textAlign: "center", marginBottom: 24 }}>
+        GitHub Issues Viewer
+      </h1>
       <IssueFilterBar
-        openCount={openCount}
-        closedCount={closedCount}
+        openCount={open}
+        closedCount={closed}
         allCount={issues.length}
         filter={filter}
         setFilter={setFilter}
       />
       <IssueList
-        issues={filteredIssues}
+        issues={filtered}
         openIdx={openIdx}
-        setOpenIdx={setOpenIdx}
+        setOpenIdx={setOpenIdx as (idx: number | null) => void}
       />
-      <Box sx={{ textAlign: "center", mt: 8 }}>
-        <Button
-          variant="contained"
-          color="info"
-          size="large"
+      <div style={{ textAlign: "center", marginTop: 64 }}>
+        <Link
           href="/"
-          sx={{
-            px: 6,
-            py: 2,
+          style={{
+            padding: "16px 48px",
             fontWeight: 900,
-            borderRadius: 4,
-            bgcolor: "#263043",
+            borderRadius: 16,
+            background: "#263043",
             color: "#90caf9",
             fontSize: 18,
+            textDecoration: "none",
             boxShadow: "0 2px 16px #0a1929",
-            ":hover": { bgcolor: "#181c24", color: "#fff" },
           }}
         >
-          TOPへ戻る
-        </Button>
-      </Box>
+          TOP
+        </Link>
+      </div>
     </>
   );
 }

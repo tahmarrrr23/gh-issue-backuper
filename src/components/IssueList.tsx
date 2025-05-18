@@ -1,21 +1,18 @@
 "use client";
 
 import { Stack } from "@mui/material";
-import React from "react";
 
-import type { Issue } from "@/components/IssueCard";
-import { IssueCard } from "@/components/IssueCard";
+import type { Issue } from "../lib/issueLoader";
+import { IssueCard } from "./IssueCard";
 
-interface IssueListProps {
-  issues: Issue[];
-  openIdx: number | null;
-  setOpenIdx: (idx: number | null) => void;
-}
-
-export const IssueList: React.FC<IssueListProps> = ({
+export const IssueList = ({
   issues,
   openIdx,
   setOpenIdx,
+}: {
+  issues: Issue[];
+  openIdx: number | null;
+  setOpenIdx: (idx: number | null) => void;
 }) => (
   <Stack spacing={4}>
     {issues.map((issue, idx) => (

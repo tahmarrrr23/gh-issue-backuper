@@ -44,18 +44,10 @@ export default function Home() {
 
   return (
     <Container maxWidth="sm">
-      <Paper
-        elevation={6}
-        sx={{
-          p: 5,
-          borderRadius: 4,
-          boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.15)",
-          background: "rgba(255,255,255,0.95)",
-        }}
-      >
+      <Paper elevation={6} sx={{ p: 5, borderRadius: 4 }}>
         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-          <GitHubIcon sx={{ fontSize: 40, color: "#24292f", mr: 1 }} />
-          <Typography variant="h4" component="h1" fontWeight={700}>
+          <GitHubIcon sx={{ fontSize: 40, mr: 1 }} />
+          <Typography variant="h4" component="h1">
             GitHub ProjectV2 Backup
           </Typography>
         </Box>
@@ -72,7 +64,7 @@ export default function Home() {
               fullWidth
               autoComplete="off"
               variant="outlined"
-              sx={{ background: "#f8fafc", borderRadius: 2 }}
+              sx={{ borderRadius: 2 }}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
@@ -115,11 +107,7 @@ export default function Home() {
                 </span>
               }
             />
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              sx={{ mt: 0.5, display: "block" }}
-            >
+            <Typography variant="caption" sx={{ mt: 0.5, display: "block" }}>
               Required scopes: repo, project (read-only is OK)
             </Typography>
           </Box>
@@ -130,7 +118,7 @@ export default function Home() {
             onChange={(e) => setOrg(e.target.value)}
             fullWidth
             variant="outlined"
-            sx={{ background: "#f8fafc", borderRadius: 2 }}
+            sx={{ borderRadius: 2 }}
           />
           <TextField
             label="Project Number"
@@ -139,23 +127,13 @@ export default function Home() {
             onChange={(e) => setProjectNumber(e.target.value)}
             fullWidth
             variant="outlined"
-            sx={{ background: "#f8fafc", borderRadius: 2 }}
+            sx={{ borderRadius: 2 }}
           />
           <Button
             variant="contained"
             onClick={handleBackup}
             disabled={!token || !org || !projectNumber}
-            sx={{
-              py: 1.5,
-              fontWeight: 700,
-              fontSize: "1.1rem",
-              background: "linear-gradient(90deg, #6366f1 0%, #06b6d4 100%)",
-              boxShadow: "0 4px 14px 0 rgba(6,182,212,0.15)",
-              transition: "background 0.2s",
-              ":hover": {
-                background: "linear-gradient(90deg, #06b6d4 0%, #6366f1 100%)",
-              },
-            }}
+            sx={{ py: 1.5, fontWeight: 700, fontSize: "1.1rem" }}
           >
             Run Backup
           </Button>
@@ -180,19 +158,7 @@ export default function Home() {
           <Button
             variant="outlined"
             href="/view"
-            sx={{
-              fontWeight: 700,
-              fontSize: "1rem",
-              borderRadius: 2,
-              borderColor: "#6366f1",
-              color: "#6366f1",
-              ":hover": {
-                background: "#f0fdfa",
-                borderColor: "#06b6d4",
-                color: "#06b6d4",
-              },
-              mt: 2,
-            }}
+            sx={{ fontWeight: 700, fontSize: "1rem", borderRadius: 2, mt: 2 }}
           >
             Issue Viewer
           </Button>
