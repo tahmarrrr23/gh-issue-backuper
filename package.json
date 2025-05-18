@@ -1,0 +1,33 @@
+{
+  "name": "gh-issue-backuper",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev",
+    "lint": "next lint",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "15.3.2",
+    "react": "^19",
+    "react-dom": "^19"
+  },
+  "devDependencies": {
+    "@tsconfig/next": "^2.0.3",
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9.27.0",
+    "eslint-config-next": "15.3.2",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "postcss": "^8.5.3",
+    "prettier": "^3.5.3",
+    "sass": "^1.89.0",
+    "stylelint": "^16.19.1",
+    "stylelint-config-recess-order": "^6.0.0",
+    "stylelint-config-standard-scss": "^15.0.0",
+    "typescript": "^5.8.3"
+  }
+}
