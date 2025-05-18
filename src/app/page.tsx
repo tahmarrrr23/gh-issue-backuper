@@ -4,14 +4,12 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { Box, Container, Paper } from "@mui/material";
 import Alert from "@mui/material/Alert";
-import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Container from "@mui/material/Container";
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
 import Link from "@mui/material/Link";
-import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { useCallback, useState } from "react";
@@ -50,6 +48,9 @@ export default function Home() {
         minHeight: "100vh",
         background: "linear-gradient(135deg, #e0e7ff 0%, #f0fdfa 100%)",
         py: 8,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
       <Container maxWidth="sm">
@@ -68,9 +69,6 @@ export default function Home() {
               GitHub ProjectV2 Backup
             </Typography>
           </Box>
-          <Typography variant="subtitle1" color="text.secondary" mb={3}>
-            Org名とProject番号を指定してGitHub ProjectV2をバックアップ！
-          </Typography>
           <Box
             component="form"
             sx={{ display: "flex", flexDirection: "column", gap: 3 }}
@@ -163,6 +161,7 @@ export default function Home() {
                 fontSize: "1.1rem",
                 background: "linear-gradient(90deg, #6366f1 0%, #06b6d4 100%)",
                 boxShadow: "0 4px 14px 0 rgba(6,182,212,0.15)",
+                transition: "background 0.2s",
                 ":hover": {
                   background:
                     "linear-gradient(90deg, #06b6d4 0%, #6366f1 100%)",

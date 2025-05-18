@@ -1,15 +1,15 @@
 import { graphql } from "@octokit/graphql";
 
-// プロジェクトV2の全データを取得する関数
+// Function to fetch all data from ProjectV2
 export async function fetchProjectV2All(
   token: string,
   org: string,
   projectNumber: number
 ) {
   if (!org || !projectNumber)
-    throw new Error("Org名とProject番号を入力してください");
+    throw new Error("Please enter both organization name and project number");
 
-  // プロジェクトIDの取得は不要、直接orgとprojectNumberでクエリ
+  // No need to get project ID, query directly with org and projectNumber
   const query = `
     query($org: String!, $number: Int!) {
       organization(login: $org) {
@@ -105,7 +105,6 @@ export async function fetchProjectV2All(
       }
     }
   `;
-
   const result = await graphql(query, {
     org,
     number: projectNumber,
